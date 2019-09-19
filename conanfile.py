@@ -32,9 +32,24 @@ class DepotToolsConan(ConanFile):
         with tools.chdir(self._source_subfolder):
             tools.get("{}/+archive/{}.tar.gz".format(self.homepage, commit))
 
+    def _list_files(self, startpath):
+        for root, dirs, files in os.walk(startpath):
+            level = root.replace(startpath, '').count(os.sep)
+            indent = ' ' * 4 * (level)
+            print('{}{}/'.format(indent, os.path.basename(root)))
+            subindent = ' ' * 4 * (level + 1)
+            for f in files:
+                print('{}{} {}'.format(subindent, f, os.lstat(os.path.join(root, f))))
+
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
-        self.copy(pattern="*", dst=".", src=self._source_subfolder)
+        try:
+            self.copy(pattern="*", dst=".", src=self._source_subfolder)
+        except OSError:
+            print("CWD: %s" % os.getcwd())
+            print("self.package_folder: %s" % self.package_folder)
+            self._list_files(self.package_folder)
+            raise
         self._fix_permissions()
 
     def _fix_permissions(self):
