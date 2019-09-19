@@ -49,6 +49,8 @@ class DepotToolsConan(ConanFile):
             print("CWD: %s" % os.getcwd())
             print("self.package_folder: %s" % self.package_folder)
             self._list_files(self.package_folder)
+            print("self.source_folder: %s" % self.source_folder)
+            self._list_files(self.source_folder)
             raise
         self._fix_permissions()
 
