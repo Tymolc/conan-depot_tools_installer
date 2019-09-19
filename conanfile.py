@@ -39,19 +39,21 @@ class DepotToolsConan(ConanFile):
             print('{}{}/'.format(indent, os.path.basename(root)))
             subindent = ' ' * 4 * (level + 1)
             for f in files:
-                print('{}{} {}'.format(subindent, f, os.lstat(os.path.join(root, f))))
+                abs_path = os.path.join(root, f)
+                print('{}{} {}'.format(subindent, f, os.lstat(abs_path)))
+                if os.path.islink(abs_path):
+                    print("-> %s" % os.readlink(abs_path))
 
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         try:
             self.copy(pattern="*", dst=".", src=self._source_subfolder, symlinks=True)
-        except OSError:
+        finally:
             print("CWD: %s" % os.getcwd())
             print("self.package_folder: %s" % self.package_folder)
             self._list_files(self.package_folder)
             print("self.source_folder: %s" % self.source_folder)
             self._list_files(self.source_folder)
-            raise
         self._fix_permissions()
 
     def _fix_permissions(self):
