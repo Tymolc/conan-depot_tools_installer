@@ -44,7 +44,7 @@ class DepotToolsConan(ConanFile):
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)
         try:
-            self.copy(pattern="*", dst=".", src=self._source_subfolder)
+            self.copy(pattern="*", dst=".", src=self._source_subfolder, symlinks=True)
         except OSError:
             print("CWD: %s" % os.getcwd())
             print("self.package_folder: %s" % self.package_folder)
